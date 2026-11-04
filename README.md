@@ -4,7 +4,7 @@ Investigación: **MACTELCO SAS** · Clasificación: confidencial · Estado: comp
 
 ## Resumen
 
-MACTELCO identificó una ONU GPON comprometida, con tres ejecutables maliciosos activos como root. Dos de ellos persisten en la partición UBIFS `/var/config` y se lanzan desde el script de personalización que el firmware ejecuta al arrancar en modo GPON.
+MACTELCO identificó una ONU GPON ZX8202DWT comprometida, con tres ejecutables maliciosos activos como root. Dos de ellos persisten en la partición UBIFS `/var/config` y se lanzan desde el script de personalización que el firmware ejecuta al arrancar en modo GPON.
 
 El binario `.liso` genera conexiones TCP masivas hacia 104.233.223.169:80, patrón compatible con participación en un DDoS. Su canal de control se reconstruyó por análisis estático: dominio cifrado `jxk.imarapi.st`, descubrimiento de la IP de control vía registros DNS TXT y sesión TLS 1.3 sobre TCP/443.
 
@@ -13,7 +13,7 @@ Un segundo binario, `.ffaaxx`, resuelve infraestructura a través de Ethereum (J
 | Dato | Valor |
 | --- | --- |
 | Equipo | ONU GPON de cliente residencial |
-| Modelo / firmware | Sin documentar |
+| Modelo / firmware | ZX8202DWT · HW 2.0.0.02.1 · SW V15.5.3 |
 | Arquitectura de las muestras | ELF MIPS 32 bits, big-endian, sin símbolos |
 | Fuentes | Salidas de consola del operador y onu-evidencia.tar |
 | Fecha del informe | 2 de noviembre de 2026 |
@@ -103,7 +103,7 @@ Los binarios persistentes incluyen peticiones `POST /dns-query` con `Content-Typ
 
 ## Vector de acceso
 
-La hipótesis de trabajo es un TV Box comprometido en la LAN del cliente que accede a la ONU por Telnet con credenciales predeterminadas, deposita los binarios y modifica el script persistente. La ONU expone Telnet, pero no hay aún registros de la sesión inicial, la IP/MAC del TV Box ni las credenciales usadas, por lo que el vector sigue sin confirmar.
+La ZX8202DWT con software V15.5.3 sale de fábrica con Telnet habilitado y credenciales por defecto. Cualquier equipo en la LAN del cliente puede autenticarse como administrador, depositar los binarios y modificar el script persistente; este es el vector de compromiso. El dispositivo de origen apunta a un TV Box comprometido en la misma red, aún sin IP/MAC identificada.
 
 La sesión Telnet desde 38.191.216.1 presente en los registros corresponde a la investigación, no al acceso del atacante.
 
@@ -151,12 +151,12 @@ Los MD5 coinciden con los calculados en el equipo antes de la transferencia.
 
 ## Alcance y limitaciones
 
-El análisis se basa en evidencia estática y capturas de consola. No hay PCAP, volcado de memoria, firmware de referencia ni registros del acceso inicial, y las marcas de tiempo de 1970 impiden fechar la infección.
+El análisis se basa en evidencia estática y capturas de consola. No hay PCAP, volcado de memoria, imagen de firmware de referencia ni registros de la sesión inicial, y las marcas de tiempo de 1970 impiden fechar la infección.
 
 Queda sin determinar:
 
-- Modelo y versión de firmware de la ONU.
-- Familia del malware, actor y vulnerabilidad explotada.
+- IP/MAC del TV Box de origen.
+- Familia del malware y actor.
 - Número de equipos afectados.
 - Tasa de paquetes e impacto real sobre 104.233.223.169.
 - Catálogo completo de órdenes de .liso.
