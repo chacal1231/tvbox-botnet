@@ -1,0 +1,18 @@
+# No publicar muestras, configuracion de abonados ni capturas crudas
+*.bin
+*.elf
+*.tar
+*.tar.gz
+*.zip
+*.7z
+*.pcap
+*.pcapng
+samples/
+evidencia-cruda/
+private/
+__pycache__/
+*.pyc
+.liso
+.ffaaxx
+.a
+u

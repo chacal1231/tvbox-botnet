@@ -1,0 +1,128 @@
+AMPLIACIÓN ESTÁTICA DE u: HTTP, TLS Y SSH
+Fecha de revisión: 8 de noviembre de 2026, America/Bogota.
+
+RESULTADO
+Se siguieron los constructores, los trabajadores y las funciones compartidas de envío/recepción de los métodos 18, 24, 27, 30, 32, 33 y 38. También se contrastó el módulo SSH de propagación de la orden 18, que es otra ruta.
+
+Dos precisiones cambian el alcance del informe anterior:
+• El método 27 no se limita a mensajes SSH sintéticos: intenta autenticación por contraseña después del intercambio de claves y reporta las credenciales cuando recibe USERAUTH_SUCCESS.
+• Hay un transporte TLS 1.3 compartido que deriva claves y envía datos de aplicación cifrados. Se distingue del método 38, que solo envía ClientHello sin completar la sesión.
+
+El resultado describe lo que el código intenta y las operaciones presentes. No prueba interoperabilidad, impacto, víctimas ni órdenes históricamente ejecutadas. No se ejecutó ni emuló u. No hubo conexiones, consultas DNS, Telnet ni consultas web. Las únicas ejecuciones fueron scripts propios que leen archivos, extraen tablas y comprueban instrucciones.
+
+Muestra original SHA256:
+7208f46f1f2f1f8204d91c39570ab54743535a8a4b5d00d1c335c42859e437c4
+Se conservan las muestras. Las direcciones son VA del desensamblado de segmentos reconstruidos.
+
+1. HTTP/1.1 — MÉTODOS 18 Y 30
+Rutas:
+  18: 0xea74 → hilo 0xf3b8 → constructor 0xec3c → motor 0x9608.
+  30: 0xf400 → hilo 0xff88 → constructor 0xf5c8 → motor 0x9608.
+
+La diferencia principal es el constructor, no un protocolo de transporte distinto. El primero usa GET como valor predeterminado (referencia en 0xee04 a 0x5f62c); el segundo POST (0xf790 → 0x5f630). El método se puede sustituir por una cadena recibida en las opciones.
+
+Las ramas permiten configurar el nombre de host, ruta, puerto, cuerpo y otros campos. El método 30 prepara contenido recibido o aleatorio y variaciones de parámetros, incluido un sufijo id. Esto es generación de tráfico, no una función que ejecute código en el servidor web.
+
+El motor común construye lotes de peticiones HTTP/1.1, reutiliza conexiones y alterna buffers de solicitudes. Añade números aleatorios a la URL y cabeceras de caché para variar las solicitudes; puede añadir cuerpo y Content-Length cuando corresponde. La cabecera X-Forwarded-For contiene valores fabricados: no cambia la dirección IP real de origen de la conexión TCP.
+
+Transporte:
+• Directo sin TLS: socket TCP, connect y write.
+• Directo con TLS: 0x9a74 llama al transporte 0x3e07c; 0x9d5c escribe mediante 0x3ddfc; puede consumir respuestas por 0x3de58.
+• Proxy: 0x9750..0x999c abre el proxy, prepara HTTP CONNECT mediante 0x8fa8 y comprueba el comienzo de una respuesta 2xx. Esa ruta deja el contexto TLS en cero y continúa con envío directo al socket. No aparece una segunda negociación TLS dentro del túnel. Por tanto, no se debe describir como soporte HTTPS por proxy plenamente demostrado: la rama observada puede mandar HTTP en claro dentro del CONNECT.
+
+No se observó en este motor interpretación de HTML, ejecución de JavaScript, almacenamiento real de navegador ni resolución de retos anti-bot. Las variaciones de cabeceras o URL no demuestran evasión de un WAF.
+
+2. HTTP CON PERFILES DE NAVEGADOR — MÉTODO 32
+Ruta: 0xcdec → hilo 0xea2c → 0xcfb4.
+El constructor usa plantillas desofuscadas con XOR 0x22 y combina perfiles de User-Agent con Accept, Accept-Language, Accept-Encoding, Referer, cookies y cabeceras Sec-*.
+
+Puede fabricar Cookie: session=..., csrftoken y valores X-Forwarded-For, variar la ruta y generar contenido. Las cookies de esta rama son cadenas construidas por el bot: no se demostró que obtenga sesiones autenticadas de usuarios reales.
+
+Tiene bucles de envío y consumo de respuesta, reutilización de conexión, pausas y reconexión. La ruta directa puede usar el mismo transporte TLS 1.3: llamada 0xe65c → 0x3e07c; envío 0xe47c → 0x3ddfc; lectura 0xe4f8 → 0x3de58.
+
+La rama de proxy 0xd6e0..0xd904 repite la limitación anterior: CONNECT y contexto TLS cero, con envío en claro al socket cuando no hay contexto. No se encontró una capa adicional que haga funcionar TLS sobre ese socket ya conectado.
+
+Capacidad confirmada: inundación HTTP con aspecto variable de navegador. No equivale a un navegador completo ni demuestra bypass de Cloudflare, CAPTCHA, autenticación o protección equivalente.
+
+3. AGOTAMIENTO DE CONEXIONES — TRES RAMAS DEL MÉTODO 24
+Ruta: 0x8a04 → hilos con envoltorio 0xc128 → 0xb140.
+La selección ocurre en 0xb1cc..0xb214 y las ramas se separan antes de enviar. El valor por defecto apunta a tcp; las otras selecciones se reconocen por el primer carácter de la cadena. No se incluyen aquí instrucciones para activar ni parametrizar estos modos.
+
+TCP sostenido:
+Mantiene varias conexiones y envía una pequeña cantidad de datos periódicamente. Gestiona sockets no bloqueantes, estados, poll, cierre y reapertura. Es consumo de conexiones/recursos, distinto de falsificar SYN por sockets raw.
+
+HTTP de cabeceras incompletas:
+En 0xbb98 construye POST / HTTP/1.1 con Content-Length muy grande y Connection: keep-alive. La plantilla acaba con una sola terminación de línea después de esa cabecera, no con la línea vacía que termina todas las cabeceras. Tras el envío inicial, añade fragmentos de cabecera y mantiene sockets abiertos.
+Esto encaja con una técnica de solicitudes lentas o incompletas orientada a retener recursos. No es correcto asegurar que envía un cuerpo completo del tamaño anunciado, ni etiquetarlo únicamente como slow POST de cuerpo. La variante TLS usa 0x3e07c/0x3ddfc; la de TCP directo usa el ayudante 0x8b34.
+
+SSH de fase previa a autenticación:
+En 0xbcf4..0xbf1c envía identificación SSH y un KEXINIT construido con nombres de algoritmos. Después mantiene/gestiona la conexión. En esta rama no aparece la secuencia de intercambio de claves, NEWKEYS y USERAUTH que sí contiene el método 27. No autentica ni abre una shell por esta ruta. El objetivo aparente es retener recursos durante las primeras fases de SSH.
+
+4. HTTP/2 — MÉTODO 33
+Ruta: 0x217cc → hilo 0x214ec → transporte TLS 0x3e07c.
+Secuencia observada:
+  0x21618: envía el prefacio HTTP/2.
+  0x2166c: envía una trama SETTINGS de nueve bytes, sin carga.
+  0x21710..0x21778: construye y envía HEADERS con un bloque HPACK sencillo.
+  0x21740..0x21764: tipo HEADERS y flags END_STREAM | END_HEADERS.
+  0x217b4: incrementa el identificador del flujo en dos; después de un lote cierra y vuelve a conectar.
+
+El bloque incluye los índices de método GET, esquema https y ruta /, junto con un valor literal para authority. El transporte anuncia ALPN h2 y http/1.1; no se observó en este trabajador una comprobación específica de que el servidor haya seleccionado h2 antes de enviar el prefacio.
+
+No hay construcción/envío de RST_STREAM en este trabajador. La descripción respaldada es múltiples solicitudes en flujos nuevos, con reconexión, no un Rapid Reset confirmado. Tampoco hay pruebas de que respete toda la negociación HTTP/2 o de que un servidor acepte todos esos flujos.
+
+5. TRANSPORTE TLS COMPARTIDO — DISTINTO DEL MÉTODO 38
+Entrada 0x3e07c. Escritura de aplicación 0x3ddfc → 0x3cea4; lectura 0x3de58 → 0x3c9bc; limpieza 0x3dff4.
+
+El ClientHello construido anuncia TLS 1.3, key share X25519, grupos/algoritmos de firma y ALPN h2 + http/1.1. El código procesa ServerHello y extrae la clave pública X25519 del servidor. Se observan ramas para las suites 0x1301, 0x1302 y 0x1303: AES-128-GCM/SHA-256, AES-256-GCM/SHA-384 y ChaCha20-Poly1305/SHA-256.
+
+No es una inferencia basada solo en cadenas: la ruta llama a X25519, deriva secretos separados para cliente/servidor y handshake/aplicación y utiliza registros cifrados para escribir y leer. Las referencias a derived, c hs traffic, s hs traffic, c ap traffic, s ap traffic y finished aparecen en llamadas de derivación, entre 0x3eb94 y 0x3fad8. Hay caminos diferenciados según la suite elegida.
+
+La máquina de handshake acumula y recorre mensajes, pasa a la fase de aplicación al procesar Finished y construye su Finished de cliente. No encontré en la ruta revisada validación de cadena X.509, del nombre del certificado o de CertificateVerify; tampoco una comparación explícita del verify_data de Finished del servidor. Esta observación describe cómo el bot trata a su interlocutor; no es una vulnerabilidad que le permita descifrar o suplantar sesiones de terceros.
+
+La etiqueta correcta es implementación propia de cliente TLS 1.3 para su tráfico, con validación de identidad no demostrada. No se probó compatibilidad, conformidad completa ni corrección criptográfica frente a un servidor real. El encabezado legacy 03 01 o 03 03 por sí solo no determina la versión negociada; la extensión supported_versions anuncia 03 04.
+
+6. CLIENTHELLO REPETIDO — MÉTODO 38
+Ruta: 0x2a878 → hilos 0x2a3dc.
+Abre TCP, comprueba la conexión y construye registros que contienen ClientHello. Puede incluir SNI, material de clave pública y relleno. Los envía directamente con send en 0x2a830, repitiendo el ciclo según el contexto y abriendo nuevas conexiones cuando corresponde.
+
+No llama al lector de handshake en ese trabajador ni espera ServerHello para derivar secretos y enviar datos de aplicación. No autentica a un servidor ni completa una sesión TLS por sí mismo. Puede provocar procesamiento de conexión/ClientHello, pero no se demuestra consumo de recursos ni eficacia concreta. Esta rama no debe confundirse con el cliente TLS compartido de la sección anterior.
+
+7. SSH CON AUTENTICACIÓN — MÉTODO 27
+Ruta: 0x258e8 → procesos de 0x251d8 → 0x24864.
+El trabajador elige objetivos y combinaciones de usuario/contraseña. Hay tablas de 50 contraseñas, 15 usuarios y 10 identificaciones SSH; además prepara contraseñas aleatorias en otra rama. No es una lectura de contraseñas almacenadas en la ONU: son intentos de acceso a otros equipos.
+
+La ruta de autenticación incluye:
+• Intercambio de identificaciones y comprobación de prefijo SSH-2.0.
+• KEXINIT: anuncia curve25519-sha256 y chacha20-poly1305@openssh.com.
+• ECDH_INIT/ECDH_REPLY, clave pública de 32 bytes y cálculo de secreto compartido X25519.
+• Resumen del intercambio y derivación de claves para ambos sentidos.
+• NEWKEYS, solicitud ssh-userauth y espera de SERVICE_ACCEPT.
+• USERAUTH_REQUEST con servicio ssh-connection y método password.
+• Recepción descifrada y reconocimiento de USERAUTH_SUCCESS (0x34) en 0x251a8..0x251b8.
+
+Los paquetes posteriores a NEWKEYS pasan por 0x24360 (envío cifrado) y 0x23f94 (recepción y comprobación de etiqueta de autenticación). Por tanto, la categoría anterior de autenticación sintética era demasiado restrictiva: el código implementa intentos de autenticación cifrada y detección de aceptación. Sin ejecutarlo no se afirma que funcione con cualquier versión/configuración de SSH.
+
+Al obtener éxito, 0x25788..0x25830 construye un texto SSH usuario:contraseña y lo manda al controlador mediante mensaje tipo 0x83. La cadena construida en esa rama no incluye explícitamente IP/puerto del objetivo. Después cierra el socket. En el recorrido de éxito del método 27 no aparecen CHANNEL_OPEN, petición exec ni envío de la plantilla de descarga.
+
+No encontré verificación de la firma de la clave del servidor ni de una clave de host conocida en esa ruta. Tampoco se demuestra bypass de autenticación: una contraseña debe ser aceptada por el interlocutor para que aparezca el resultado positivo.
+
+8. SSH DE PROPAGACIÓN — OTRA RUTINA, CON LIMITACIÓN CONCRETA
+El selector 16 de la orden C2 18 apunta a 0x36068, una implementación separada. No es el método 27 de la orden 0.
+Esta rutina prepara una orden de descarga y ejecución, hace negociación SSH, prueba acceso y, en la ruta de aceptación, construye CHANNEL_OPEN para session y CHANNEL_REQUEST exec. El envío del comando se observa en 0x36b88..0x36c08; luego espera una respuesta de aceptación de la solicitud.
+
+Limitación visible: las solicitudes de autenticación usan la cadena literal ssh-conn de 0x653b0, referenciada en 0x367b4 y 0x36998, en lugar de la cadena ssh-connection que sí usa el método 27. Es un nombre de servicio no estándar y puede impedir la autenticación con servidores que exigen el servicio habitual. No se corrigió ni se probó. Se conserva como evidencia de implementación; no se presenta esta ruta como propagación funcional confirmada.
+
+Aunque llegue a recibir una aceptación de exec, eso no verifica que la descarga haya terminado, que el archivo descargado se haya ejecutado correctamente ni que se haya instalado persistencia.
+
+9. ALCANCE PRÁCTICO Y LÍMITES
+u puede intentar saturación HTTP/HTTPS, solicitudes incompletas, múltiples flujos HTTP/2, procesamiento de ClientHello y retención de conexiones SSH. También contiene intentos de autenticación SSH y reporte de credenciales, además de una ruta distinta que pretende ejecutar cargas en equipos remotos.
+
+La existencia de esas capacidades no demuestra que se hayan usado desde esta ONU. Tampoco identifica la vía inicial de infección, las víctimas o el operador. Los destinos de estas ramas dependen de la orden/configuración recibida; no se identificó aquí un C2 adicional por el solo uso de HTTP, TLS o SSH.
+
+Quedan fuera de lo demostrable por esta revisión: eficacia y caudal, conformidad de todos los parsers, interoperabilidad con servidores, validación criptográfica exhaustiva y actividad histórica. Las ramas principales pendientes están ahora diferenciadas; no se afirma haber probado todas las combinaciones de opciones ni la ausencia de cualquier otro comportamiento.
+
+APOYO
+subvariantes-http-tls-ssh-u.json: hallazgos y comprobaciones estáticas puntuales.
+evidencia-subvariantes-http-tls-ssh-u.txt: instrucciones de las rutas revisadas.
+metodos-orden-0-u.csv y metodos-u-evidencia.json: inventario actualizado con estas precisiones.

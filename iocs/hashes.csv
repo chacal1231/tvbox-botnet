@@ -1,0 +1,8 @@
+case,sample,filename,size_bytes,md5,sha256,source,sha1,verification
+A,.ffaaxx,pid259.bin,652524,3158380a9338e21e9db3dea68671dd59,0afa465224ae07e025b5bea1ba5b29618c3309754a9d471ac85958600ac66b5f,informe original,,declarado en informe A; sin recalcular
+A,.liso,pid262.bin,631912,5c8ce65398a1723adf4e6406f0c34800,4063cdb6e7b6427a82ccf160fc3a13e645e3bc87428eb094aa12b6b32e8306e7,informe original,,declarado en informe A; sin recalcular
+A,.a,pid3437.bin,310808,965c86dc0c3db91de5b3a2afcfe38742,4707d314f078b84b217e0cc9e6a02283f262c71dbafe5389ba9589e03fcb4c39,informe original,,declarado en informe A; sin recalcular
+A,hmm,hmm.bin,0,d41d8cd98f00b204e9800998ecf8427e,e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,informe original (archivo vacío; no es IOC por sí solo),,declarado en informe A; sin recalcular
+B,.liso,.liso,631912,3d22d131c80d94f3a620575d0c94d8c8,0c0342c4f3d1a976e3344d2f1508ea298fc8e7c65a513d080b17eca76f3315ef,muestra local,05492c6e5a1d426b373aec8d80c3d773f68e4e8c,recalculado localmente 2026-11-08
+B,u,u,169704,8020256b6b282d64d3aed3f4e617bb88,7208f46f1f2f1f8204d91c39570ab54743535a8a4b5d00d1c335c42859e437c4,muestra local (empaquetado),8341b4bd8d0dc1322da869882008ca92697d678e,recalculado localmente 2026-11-08
+B,downloader,downloader,1984,e83c6103fa160db22e58b084a2381916,dd75cf7600b31a2f7f6ad1c62fd661a8855637197c7195b0752a909400c68230,muestra local,47a3cae7fda95dbda45cf09f1e1f689d6cdcc26b,recalculado localmente 2026-11-08

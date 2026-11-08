@@ -1,0 +1,10 @@
+{
+  "synthetic_only": true,
+  "no_network": true,
+  "no_sample_execution": true,
+  "ephemeral_dh_agrees": true,
+  "static_dh_agrees": true,
+  "identity_message_verifies": true,
+  "session_keys_agree": true,
+  "limitation": "Checks mathematical interpretation, not an execution trace or complete interoperability test"
+}

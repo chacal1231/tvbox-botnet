@@ -1,0 +1,53 @@
+AUTENTICACIÓN INICIAL Y CONTADORES DE u
+Revisión: 2026-11-08. Análisis estático, caso B.
+
+RESULTADO
+Se cerró el recorrido de comprobaciones iniciales, activación de sesión, incremento de contadores y errores de etiqueta en el canal principal revisado. Se identificó además un umbral de reconexión antes del agotamiento del contador de 32 bits. Esto completa esos recorridos; no equivale a certificar la seguridad criptográfica del protocolo completo.
+
+1. QUÉ ACEPTA LA NEGOCIACIÓN
+El llamador 0x411c..0x4158 ejecuta 0x1c6e0 antes del primer envío de identificación. Si la rutina devuelve un error, pasa a 0x4084: cierre y reintento mediante 0x5458. No se observó en esta ruta un fallback voluntario a una sesión sin cifrado cuando falla la negociación.
+La rutina inicial aborta si el envío inicial no devuelve el tamaño esperado, falla la espera/recepción, el producto escalar comunica error, la etiqueta no verifica, el texto recuperado no mide 32 bytes o no coincide con la identidad pública esperada. Las comprobaciones se agrupan en 0x1c794, 0x1c7c8, 0x1c7e8, 0x1c814, 0x1c84c, 0x1c85c, 0x1c8e0 y 0x1c8fc.
+La comparación de los 32 bytes en 0x1c8bc..0x1c8e0 acumula XOR/OR y decide al final. No se afirma una auditoría temporal completa de todas las primitivas.
+
+2. IDENTIDAD COMPARADA NO ES PRUEBA COMPLETA DE POSESIÓN
+El bloque de identidad se verifica bajo el secreto efímero y su texto se compara con una pública incorporada. Esta comparación confirma igualdad con el valor esperado; no es una firma ni, por sí sola, prueba de posesión de la privada estática.
+Después se deriva un segundo secreto usando la identidad estática esperada, que participa en la clave de sesión. La función retorna antes de recibir el primer mensaje protegido con esa clave final. Por tanto se distinguen: comprobaciones de la negociación, derivación de clave y confirmación implícita que aportaría una comunicación posterior válida. No se concluye aquí autenticación mutua formal ni resistencia completa a intermediarios.
+En la ruta revisada no se identificó una credencial privada persistente del bot que acredite la identidad del dispositivo: el cliente genera material efímero y luego envía identificación protegida. Esto no describe necesariamente las políticas del servidor, cuyo código no está disponible.
+
+3. PRODUCTO ESCALAR Y RESULTADOS DEGENERADOS
+0x1bc00 ajusta internamente el escalar, recorre una escalera y serializa 32 bytes. La rutina revisada tiene un único retorno normal, 0x1c548, precedido por v0=0. Las comprobaciones del valor de retorno en el llamador no equivalen, por ello, a comprobar que el secreto producido sea no nulo.
+No se observó una comprobación explícita del resultado todo-cero entre esta función y la derivación de 0x1c6e0. Es una validación no encontrada, no una demostración de que se pueda obtener la clave final ni emitir órdenes aceptadas. No se construyeron entradas para atacar al servidor o al cliente. Sigue pendiente verificar toda la aritmética de campo contra vectores conocidos sin ejecutar la muestra.
+
+4. CUÁNDO SE ACTIVA LA SESIÓN
+Tras la negociación, el primer registro de identificación se protege con contador 0 e indicador de dirección 0 (0x41cc..0x41e0). Se envían su longitud y su bloque protegido por separado. Solo después del éxito de ambos envíos se pone a 1 el indicador global de sesión y el contador TX; RX se pone a 0 (0x4244..0x4268).
+La rama de recepción directa de 0x4708 existe cuando el indicador es cero, pero no hay en el recorrido normal identificado una transición desde una negociación fallida hacia despacho en claro. No debe afirmarse por esa rama que cualquier interlocutor pueda desactivar el cifrado. Las carreras con otros hilos y todos los estados excepcionales no se han probado.
+
+5. CONTADORES Y NONCES
+Estado global identificado: RX en VA 0x79134, TX en 0x79138, indicador de sesión en 0x7913c y clave de sesión desde 0x79140. Son direcciones del binario reconstruido, no direcciones de memoria obtenidas en vivo.
+Envío normal: 0x5fdc carga el TX anterior como argumento; 0x5fe4..0x5fe8 guarda TX+1 antes de proteger. Dirección 0. La rutina común contiene bloqueo/desbloqueo alrededor de preparación y envío; sus auxiliares incluyen instrucciones atómicas de sincronización. Esto respalda serialización de esa ruta, no una prueba de ausencia de toda carrera en el programa.
+Recepción: 0x4644 carga RX anterior, 0x4650..0x4660 guarda RX+1 antes de verificar y 0x4674 pasa dirección 1. El contador no se extrae del mensaje recibido: el receptor usa el siguiente valor esperado.
+0x8534 y 0x8620 construyen el nonce con un byte de dirección, siete ceros y el contador de 32 bits almacenado big-endian. El contador de mensaje es distinto del contador interno de bloques de ChaCha20.
+El primer envío de aplicación ordinario posterior a la identificación usa TX=1; el primer mensaje protegido recibido usa RX=0. Un prefijo de longitud cero vuelve al bucle antes de la verificación y no consume RX.
+
+6. ETIQUETA ERRÓNEA, REPETICIÓN Y RECONEXIÓN
+0x8620 compara los 16 bytes de etiqueta antes de descifrar el cuerpo. Si falla devuelve -1. En el llamador, 0x4684 desvía a liberación; 0x4700 y 0x461c llevan a 0x4084. No se llega al despachador de órdenes. La ruta de cierre 0x53f0 pone descriptor=-1 e indicador=0, y el siguiente establecimiento vuelve a negociar.
+El RX ya incrementado no se retrocede para probar contadores alternativos: se abandona la conexión. El orden estricto del contador hace que una repetición de un bloque previamente aceptado no sea válida con el siguiente nonce esperado, salvo condiciones criptográficas excepcionales. No hay aquí una ventana de reordenamiento ni un número de secuencia leído del cuerpo.
+Esto describe rechazo dentro de la sesión inspeccionada, no una prueba formal contra replay entre sesiones. La separación entre sesiones depende de renovar correctamente las claves. La rama de generación alternativa cuando falla /dev/urandom sigue requiriendo una evaluación de impredecibilidad.
+Los auxiliares 0x5ca8 y 0x5dc0 completan envíos/lecturas parciales y tratan errores/interrupciones; el contador corresponde al registro protegido, no al número de llamadas a recv ni a los segmentos TCP. Un fallo de transporte en estas rutas lleva a cerrar, sin reenviar como un registro nuevo el mismo bloque protegido.
+
+7. UMBRAL ANTES DEL DESBORDAMIENTO
+0x32bc..0x32e4 construye 0x40000001 y compara ambos contadores sin signo. Si TX o RX es mayor que 0x40000000 (2^30), llama a cierre/reintento y limpia los contadores y el indicador en 0x3300..0x330c. Por tanto el bucle normal contiene una salvaguarda antes del wrap de 32 bits; no es correcto afirmar que simplemente espera a desbordarse.
+El valor exactamente 0x40000000 aún pasa la comparación; el siguiente valor provoca el cierre al volver al bucle. La comprobación está en el bucle principal, no dentro de cada llamada al cifrador. No se ha demostrado un límite global estricto frente a todos los intercalados de hilos, ni se afirma que pueda alcanzarse el wrap en la práctica.
+Reiniciar contadores no renueva por sí solo una clave: la seguridad depende también de que la nueva negociación produzca material de sesión distinto. La estructura del código intenta esa renegociación; la independencia real del material aleatorio no se midió.
+
+8. LÍMITES DE LONGITUD Y DESPACHO
+La recepción separa el prefijo de dos bytes, ignora longitud cero y acepta longitudes de cuerpo de 1 a 4096 en la condición de 0x4598..0x45a8. En modo protegido lee además 16 bytes de etiqueta. No se observó inclusión del prefijo como AAD en 0x8534/0x8620.
+La validación de etiqueta y la longitud recuperada preceden a los registros especiales y al despacho. Autenticar bytes no demuestra que todos los parsers de órdenes sean seguros: esa es otra revisión.
+
+COMPROBACIONES Y ALCANCE
+Se verificaron instrucciones clave directamente contra los bytes de los segmentos reconstruidos y se comprobaron reglas aritméticas del umbral y separación de nonces. Son lectura y modelos propios, no ejecución ni emulación de u. No hubo consultas DNS, conexiones al C2 ni tráfico de prueba. No se generó un cliente operativo ni se intentó suplantar al controlador.
+Los resultados se limitan al SHA-256 indicado y al canal principal revisado. No prueban órdenes históricas, tamaño de botnet, interoperabilidad ni una auditoría integral de autenticación/criptografía/concurrencia.
+
+SHA-256: 7208f46f1f2f1f8204d91c39570ab54743535a8a4b5d00d1c335c42859e437c4
+Instrucciones comprobadas: 38
+Reglas matemáticas comprobadas: 11

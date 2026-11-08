@@ -1,0 +1,204 @@
+{
+  "fecha": "2026-11-08",
+  "archivo": "muestras/liso.bin",
+  "sha256": "0c0342c4f3d1a976e3344d2f1508ea298fc8e7c65a513d080b17eca76f3315ef",
+  "tamano": 631912,
+  "metodo": "Lectura de ELF/desensamblado y reconstrucción matemática propia; sin ejecutar ni emular MIPS, DNS o conexiones.",
+  "configuracion": [
+    {
+      "id": 1,
+      "offset": "0x89340",
+      "va": "0x489340",
+      "length": 14,
+      "ciphertext": "0784b3931b42737336e576e03631",
+      "plaintext_hex": "6a786b2e696d61726170692e7374",
+      "plaintext": "jxk.imarapi.st"
+    },
+    {
+      "id": 2,
+      "offset": "0x89350",
+      "va": "0x489350",
+      "length": 7,
+      "ciphertext": "0b9dacd5175d2d",
+      "plaintext_hex": "6661746865723f",
+      "plaintext": "father?"
+    },
+    {
+      "id": 3,
+      "offset": "0x89358",
+      "va": "0x489358",
+      "length": 9,
+      "ciphertext": "0195bace01433c7238",
+      "plaintext_hex": "6c696273736c2e736f",
+      "plaintext": "libssl.so"
+    },
+    {
+      "id": 4,
+      "offset": "0x893d0",
+      "va": "0x4893d0",
+      "length": 24,
+      "ciphertext": "428caad2110061643bf330a12a282ab7e57c81592ad32465",
+      "plaintext_hex": "2f70726f632f73656c662f6f6f6d5f73636f72655f61646a",
+      "plaintext": "/proc/self/oom_score_adj"
+    },
+    {
+      "id": 5,
+      "offset": "0x893ec",
+      "va": "0x4893ec",
+      "length": 18,
+      "ciphertext": "428caad2110061643bf330a12a282aa5e279",
+      "plaintext_hex": "2f70726f632f73656c662f6f6f6d5f61646a",
+      "plaintext": "/proc/self/oom_adj"
+    },
+    {
+      "id": 6,
+      "offset": "0x89364",
+      "va": "0x489364",
+      "length": 3,
+      "ciphertext": "40cdef",
+      "plaintext_hex": "2d3137",
+      "plaintext": "-17"
+    },
+    {
+      "id": 7,
+      "offset": "0x89368",
+      "va": "0x489368",
+      "length": 5,
+      "ciphertext": "40cde88d42",
+      "plaintext_hex": "2d31303030",
+      "plaintext": "-1000"
+    },
+    {
+      "id": 8,
+      "offset": "0x89400",
+      "va": "0x489400",
+      "length": 352,
+      "ciphertext": "4289abcf5d4d7b6f78e930bb36375ab7e47a9d13099d3376ed5a7b3597c9cc6ac93562409260428a82a24f73b9edfbcad550bf5d607d3640dff931c2abc78c7bc7ed4ebb2e4a882bb46e9906e317b100885c789c177dfcbcafdf789548c89d7a38b4340900eb4b29eb630e3369c8ed9e0f8073637551036040fcf29384bedd5bca13aa7f3d01cdd7c6967cc891a9523aef647855b932dfa788f78d275dc3f18cf39d35b3e342c9b2aeb21a9f3c163dcae52817f091d3bd0b7ff8ad30babc832cf9c0cf4ed356c67ba23bc28e6f0cf8fc28ae45b62f0260c4ceb28bb028939955fe8f63d5e2a7935d294ea20a7424f1305332dbfea05461caed53bcd8fd0db2b06b43e3c1bb2ca0ed43ec14743c84883f975d454a272b7fdd9fcaf7b32c0ff5a31949c6564f6a468323c0f0824b60a2ffccc6723fa3212e51c776afe7da50d6ceb63e8a231bdc1efa030043c44b8caf43b6d1a042a3a8c7424fa63bdc10f7a167",
+      "plaintext_hex": "2f7573722f62696e2f7c2f7573722f7362696e2f7c2f73797374656d2f7c2f6d6e742f6d74642f6170702f7c2f6f72672f7c2f7a2f7a62696e2f7c2f686f6d652f6170702f7c2f6476722f62696e2f7c2f64756b73616e2f7c2f7573657266732f7c2f6d6e742f6170702f7c2f7573722f6574632f7c2f6476722f6d61696e2f7c2f7573722f6c6f63616c2f7c2f7661722f62696e2f7c2f7a2f62696e2f7c2f6476722f7c2f6d6e742f6d74642f7c2f7a636f6e662f7c2f676d2f62696e2f7c2f686f6d652f70726f636573732f7c2f7661722f6368616c6c656e67652f7c2f7573722f6c69622f7c2f686f6d652f7765624c69622f7c2f7362696e2f7c2f62696e2f7c2f686f6d652f646176696e63692f7c2f736e61702f7c2f7777777c2f7070706f657c2f726f6d7c2f6f7665726c61797c2f6d656469617c2f6f70747c2f646176696e63697c2f646576696e666f7c2f636f6e6669677c2f696d616765",
+      "plaintext": "/usr/bin/|/usr/sbin/|/system/|/mnt/mtd/app/|/org/|/z/zbin/|/home/app/|/dvr/bin/|/duksan/|/userfs/|/mnt/app/|/usr/etc/|/dvr/main/|/usr/local/|/var/bin/|/z/bin/|/dvr/|/mnt/mtd/|/zconf/|/gm/bin/|/home/process/|/var/challenge/|/usr/lib/|/home/webLib/|/sbin/|/bin/|/home/davinci/|/snap/|/www|/pppoe|/rom|/overlay|/media|/opt|/davinci|/devinfo|/config|/image"
+    },
+    {
+      "id": 9,
+      "offset": "0x89370",
+      "va": "0x489370",
+      "length": 5,
+      "ciphertext": "3dacb1d948",
+      "plaintext_hex": "505069643a",
+      "plaintext": "PPid:"
+    },
+    {
+      "id": 10,
+      "offset": "0x89378",
+      "va": "0x489378",
+      "length": 73,
+      "ciphertext": "1a9bbdc90e4c67733be96ba8313509a9e9669d4809d4347ff94b6a24ccd08f69c235315e89670c9f8ea10873f5f2f5ce9b58ec4a397b335bd4a6319db0d4937b8ae351bf7d5dce23ae",
+      "plaintext_hex": "776765747c6375726c7c746674707c6d6f756e747c6674706765747c74656c6e65747c736f6361747c73687c63707c6361747c6d767c677265707c70737c7265626f6f747c6b696c6c",
+      "plaintext": "wget|curl|tftp|mount|ftpget|telnet|socat|sh|cp|cat|mv|grep|ps|reboot|kill"
+    }
+  ],
+  "roundtrip_xor": [
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true,
+    true
+  ],
+  "dominio": "jxk.imarapi.st",
+  "resolver_txt": "0x408210",
+  "decodificador_candidato": "0x409690",
+  "mascara_octetos_xor": "6b 9e 3f 2a",
+  "seleccion": "PRNG 0x4072b0 modulo numero de candidatos aceptados; sin deduplicación observada",
+  "doh": [
+    {
+      "host": "dns.google",
+      "ip": "8.8.8.8",
+      "port": 443,
+      "funcion": "Resolvedor DoH, no C2"
+    },
+    {
+      "host": "dns.google",
+      "ip": "8.8.4.4",
+      "port": 443,
+      "funcion": "Resolvedor DoH, no C2"
+    },
+    {
+      "host": "cloudflare-dns.com",
+      "ip": "1.1.1.1",
+      "port": 443,
+      "funcion": "Resolvedor DoH, no C2"
+    },
+    {
+      "host": "cloudflare-dns.com",
+      "ip": "1.0.0.1",
+      "port": 443,
+      "funcion": "Resolvedor DoH, no C2"
+    },
+    {
+      "host": "dns.quad9.net",
+      "ip": "9.9.9.9",
+      "port": 443,
+      "funcion": "Resolvedor DoH, no C2"
+    },
+    {
+      "host": "dns.quad9.net",
+      "ip": "149.112.112.112",
+      "port": 443,
+      "funcion": "Resolvedor DoH, no C2"
+    },
+    {
+      "host": "dns.adguard-dns.com",
+      "ip": "94.140.14.14",
+      "port": 443,
+      "funcion": "Resolvedor DoH, no C2"
+    },
+    {
+      "host": "dns.adguard-dns.com",
+      "ip": "94.140.15.15",
+      "port": 443,
+      "funcion": "Resolvedor DoH, no C2"
+    }
+  ],
+  "fallback": {
+    "ip": "8.8.8.8",
+    "puerto": 53,
+    "transporte": "UDP",
+    "intentos_maximos": 15
+  },
+  "c2": {
+    "puerto": 443,
+    "transporte": "TCP",
+    "ipv4": "Determinada por TXT; no consultada"
+  },
+  "pruebas_sinteticas": [
+    {
+      "entrada_sintetica": "198.51.100.7",
+      "resultado": null,
+      "coincide": true
+    },
+    {
+      "entrada_sintetica": "[::adad:5b2d]",
+      "resultado": "198.51.100.7",
+      "coincide": true
+    },
+    {
+      "entrada_sintetica": "[::zzzz:zzzz]",
+      "resultado": null,
+      "coincide": true
+    },
+    {
+      "entrada_sintetica": "::ADAD5B2D",
+      "resultado": "198.51.100.7",
+      "coincide": true
+    },
+    {
+      "entrada_sintetica": "adad5b2d",
+      "resultado": null,
+      "coincide": true
+    }
+  ]
+}

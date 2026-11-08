@@ -1,0 +1,299 @@
+{
+  "muestra_sha256": "7208f46f1f2f1f8204d91c39570ab54743535a8a4b5d00d1c335c42859e437c4",
+  "tipo": "Comprobación matemática independiente, no prueba del ejecutable",
+  "red": false,
+  "ejecucion_muestra": false,
+  "emulacion": false,
+  "claves": "Artificiales, sin material de sesión real",
+  "comprobaciones": [
+    {
+      "comprobacion": "Longitud 0: recuperación y etiqueta",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 0: etiqueta modificada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 0: dirección incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 0: contador incorrecto rechazado",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 0: clave incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 0: etiqueta truncada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 0: mismo flujo, distinto formato de autenticación RFC 8439",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1: recuperación y etiqueta",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1: corrupción del ciphertext rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1: etiqueta modificada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1: dirección incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1: contador incorrecto rechazado",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1: clave incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1: etiqueta truncada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1: mismo flujo, distinto formato de autenticación RFC 8439",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 15: recuperación y etiqueta",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 15: corrupción del ciphertext rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 15: etiqueta modificada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 15: dirección incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 15: contador incorrecto rechazado",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 15: clave incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 15: etiqueta truncada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 15: mismo flujo, distinto formato de autenticación RFC 8439",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 16: recuperación y etiqueta",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 16: corrupción del ciphertext rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 16: etiqueta modificada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 16: dirección incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 16: contador incorrecto rechazado",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 16: clave incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 16: etiqueta truncada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 16: mismo flujo, distinto formato de autenticación RFC 8439",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 17: recuperación y etiqueta",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 17: corrupción del ciphertext rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 17: etiqueta modificada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 17: dirección incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 17: contador incorrecto rechazado",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 17: clave incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 17: etiqueta truncada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 17: mismo flujo, distinto formato de autenticación RFC 8439",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 63: recuperación y etiqueta",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 63: corrupción del ciphertext rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 63: etiqueta modificada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 63: dirección incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 63: contador incorrecto rechazado",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 63: clave incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 63: etiqueta truncada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 63: mismo flujo, distinto formato de autenticación RFC 8439",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 64: recuperación y etiqueta",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 64: corrupción del ciphertext rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 64: etiqueta modificada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 64: dirección incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 64: contador incorrecto rechazado",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 64: clave incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 64: etiqueta truncada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 64: mismo flujo, distinto formato de autenticación RFC 8439",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 65: recuperación y etiqueta",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 65: corrupción del ciphertext rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 65: etiqueta modificada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 65: dirección incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 65: contador incorrecto rechazado",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 65: clave incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 65: etiqueta truncada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 65: mismo flujo, distinto formato de autenticación RFC 8439",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1024: recuperación y etiqueta",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1024: corrupción del ciphertext rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1024: etiqueta modificada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1024: dirección incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1024: contador incorrecto rechazado",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1024: clave incorrecta rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1024: etiqueta truncada rechazada",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Longitud 1024: mismo flujo, distinto formato de autenticación RFC 8439",
+      "resultado": true
+    },
+    {
+      "comprobacion": "Repetir exactamente clave/dirección/contador conserva etiqueta: el rechazo de replay requiere estado externo",
+      "resultado": true
+    }
+  ],
+  "limite": "No valida X25519 MIPS, interoperabilidad, autenticación completa, gestión de contadores ni rechazo de replay del binario."
+}

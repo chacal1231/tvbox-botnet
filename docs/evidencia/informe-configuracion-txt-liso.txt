@@ -1,0 +1,113 @@
+CONFIGURACIÓN Y DESCUBRIMIENTO TXT DEL C2 DE .liso
+Revisión: 8 de noviembre de 2026 (America/Bogota).
+
+RESULTADO CONFIRMADO
+Nuestra .liso utiliza el dominio jxk.imarapi.st. Es el mismo nombre que figura en el análisis anterior del usuario, pese a que las muestras tienen hashes distintos.
+El código consulta TXT, obtiene candidatos codificados, los transforma a IPv4 y elige uno con un generador pseudoaleatorio. Luego intenta conectar a esa IPv4 por TCP/443. No se obtuvo ni se consultó ninguna respuesta DNS real durante este análisis.
+
+Hay una precisión respecto de la descripción anterior: el parser revisado no convierte directamente cadenas IPv4 decimales de los TXT. Los candidatos contienen un sufijo hexadecimal ofuscado. Una lista de IPv4 escritas como 1.2.3.4 no es el formato aceptado por este decodificador.
+
+ALCANCE
+Solo archivos locales, lectura del ELF MIPS big-endian, desensamblado y reconstrucción matemática propia. No se ejecutó ni emuló la muestra; no se consultó DNS, DoH, servidores C2 ni ningún otro destino. Los scripts propios no contienen operaciones de red.
+Muestra: outputs/muestras/liso.bin, 631912 bytes.
+SHA256: 0c0342c4f3d1a976e3344d2f1508ea298fc8e7c65a513d080b17eca76f3315ef
+Las direcciones citadas son VA. El primer segmento mapea VA 0x400000 al offset 0 del archivo; para el segundo segmento se utilizó su propio mapeo ELF, no una resta fija del primer segmento. GP observado: 0x4e0e40.
+
+1. DESCIFRADO DE LA TABLA
+0x40a2a4 inicializa diez registros mediante 0x40a204. Cada registro contiene puntero, longitud e indicador de si está cifrado. La consulta se desbloquea mediante 0x40a12c, se lee con 0x40a1bc y se vuelve a bloquear con 0x40a174.
+La función común 0x409cec genera un flujo XOR propio, basado en sumas y rotaciones de 32 bits y una recurrencia de realimentación. No se presenta como AES, RC4 ni ChaCha20 estándar.
+Los cuatro valores iniciales se leen como little-endian de VA 0x489564..0x489573; el código los mezcla con constantes, realiza veinte iteraciones iniciales y genera palabras de flujo para bloques de hasta cuatro bytes. El lector 0x409cc0 confirma el orden little-endian de esos valores.
+El dominio corresponde a la entrada 1, ciphertext en VA 0x489340, offset 0x89340, longitud 14. Su ciphertext es:
+  07 84 b3 93 1b 42 73 73 36 e5 76 e0 36 31
+El resultado exacto es:
+  jxk.imarapi.st
+
+Otras entradas recuperadas que corroboran la interpretación:
+  2: father?
+  3: libssl.so
+  4: /proc/self/oom_score_adj
+  5: /proc/self/oom_adj
+  6: -17
+  7: -1000
+  8: lista de rutas, desde /usr/bin/ hasta /image.
+  9: PPid:
+ 10: lista de nombres de utilidades, desde wget hasta kill.
+Se exportaron las diez entradas completas. No se atribuye una función concreta a las listas 8 y 10 sin seguir sus llamadores.
+
+Comprobación: al aplicar dos veces la transformación matemática independiente se recupera el ciphertext de las diez entradas. Los textos coherentes y la referencia directa a la entrada 1 desde el llamador del resolver refuerzan el resultado. Esta comprobación no es ejecución ni emulación de las instrucciones MIPS.
+
+2. ENLACE ENTRE DOMINIO Y C2
+0x406794..0x4067b8: desbloquea y obtiene la entrada 1.
+0x4067e0..0x406804: calcula su longitud y llama a 0x408210 con ese dominio.
+0x406810..0x40681c: vuelve a bloquear la entrada.
+0x406824..0x406850: si no hay candidato, cierra el descriptor y vuelve a la lógica de reintento.
+0x406854..0x406880: prepara AF_INET, puerto 443 y convierte el candidato decimal a dirección de red; libera la cadena.
+0x4068a8..0x4068c0: llama a connect con ese sockaddr.
+
+Por tanto, la dirección no queda fijada al valor observado en una captura anterior. El mismo ejecutable puede recibir otra dirección a través de una respuesta TXT posterior.
+
+3. RESOLUCIÓN PRINCIPAL: DNS SOBRE HTTPS
+0x4082a0..0x4082bc llama a 0x4078cc con QTYPE 16 (TXT). El ayudante prepara la consulta DNS y la envía mediante POST /dns-query, application/dns-message, sobre TLS/TCP 443.
+La tabla VA 0x4d4018..0x4d4050 incluye ocho pares host/IP. El recorrido comienza por el primero y avanza por entradas de ocho bytes si falla, hasta el último. No se observó selección aleatoria del proveedor DoH en esa ruta.
+
+Resolvedores incorporados (servicios públicos utilizados para consultar DNS, no servidores C2):
+  dns.google              8.8.8.8:443
+  dns.google              8.8.4.4:443
+  cloudflare-dns.com      1.1.1.1:443
+  cloudflare-dns.com      1.0.0.1:443
+  dns.quad9.net           9.9.9.9:443
+  dns.quad9.net           149.112.112.112:443
+  dns.adguard-dns.com     94.140.14.14:443
+  dns.adguard-dns.com     94.140.15.15:443
+
+4. PROCESAMIENTO DE TXT EN 0x408210
+• Limita a 64 la cantidad de respuestas DNS que recorre.
+• Comprueba límites del buffer, tipo TXT (16), clase IN (1) y longitud del RDATA.
+• Recorre las cadenas de longitud prefijada que componen cada RDATA TXT. Acepta longitudes de 1 a 254 bytes en la condición inspeccionada.
+• Trata cada cadena TXT por separado; no concatena automáticamente varios fragmentos para formar un único candidato.
+• Divide el contenido de cada cadena con el delimitador |.
+• Entrega cada token al decodificador 0x409690. Solo conserva los que producen un resultado no nulo.
+• El límite de candidatos calculado es dieciséis veces el número de respuestas considerado, hasta 1024. La ruta de respaldo repite la misma idea.
+
+Un TXT puede aportar varios candidatos mediante |; varios TXT o varias cadenas de un TXT pueden ampliar el conjunto. No se observó deduplicación ni ordenación. Repetir un candidato puede darle más posiciones en el conjunto seleccionado, aunque eso no prueba que el operador lo haga.
+
+5. CANDIDATOS OFUSCADOS: 0x409690
+El parser busca el final del token o el primer carácter ]. Desde ahí inspecciona hacia atrás un sufijo de ocho dígitos hexadecimales, permitiendo separadores :. Convierte los ocho dígitos en cuatro bytes y aplica XOR a cada byte con:
+  6b 9e 3f 2a
+Los cuatro resultados se formatean como IPv4 decimal con puntos y se devuelve una cadena asignada en memoria.
+
+El uso de : y ] admite una presentación parecida a una dirección IPv6, pero el resultado usado por este llamador es IPv4. El parser no verifica que todo el texto constituya una IPv6 válida. Esta ruta no es soporte de C2 por IPv6.
+
+Particularidad del límite izquierdo: el recorrido hacia atrás no procesa el byte en la posición inicial del token. Por eso un token desnudo de exactamente ocho dígitos hexadecimales no se comporta igual que un token con prefijo/separador y ese sufijo. No se corrigió esa condición en el modelo.
+
+Se comprobó una reconstrucción textual independiente con datos sintéticos de la red documental 198.51.100.0/24: formas con sufijo hexadecimal y separadores producen la IPv4 prevista; una IPv4 decimal escrita directamente, caracteres hex inválidos y la forma desnuda de ocho caracteres no se aceptan en los casos comprobados. Esos datos no son IOC ni respuestas observadas del dominio.
+
+6. ELECCIÓN DE LA IP
+Ruta DoH: 0x4084cc llama al generador interno 0x4072b0; 0x4084dc..0x4084f8 calcula el resto de dividir por el número de candidatos y toma la posición resultante.
+Ruta UDP: repite la selección en 0x408a04..0x408a30.
+El índice es R mod N, donde R es la salida pseudoaleatoria y N la cantidad de candidatos aceptados. No se infiere uniformidad criptográfica: hay sesgo de módulo potencial y las entradas duplicadas conservan posiciones.
+
+Luego libera los candidatos no elegidos y la tabla y devuelve únicamente el candidato seleccionado. No conserva esa lista para probar todas las IPs en orden si falla la conexión TCP. Una nueva consulta en la ruta de conexión puede devolver otro conjunto o seleccionar otro elemento del mismo conjunto.
+
+No se observó un temporizador de cambio de C2 mientras una sesión sigue conectada en esta ruta, ni uso del TTL para programar tal cambio. La rotación que demuestra el código consiste en descubrimiento por TXT y selección en la ruta de establecimiento/reestablecimiento de conexión.
+
+7. RESPALDO: DNS UDP A 8.8.8.8:53
+Si el ayudante DoH falla o no se consigue un candidato utilizable, 0x408558 construye otra consulta TXT del mismo dominio.
+0x408630..0x408680 abre UDP y prepara 8.8.8.8:53. Hay hasta quince intentos en ese bucle, con espera/reintento: el contador empieza en 1 y termina al incrementarse a 16. Examina el identificador de respuesta, RCODE, truncamiento y registros TXT; aplica el mismo decodificador de candidatos y selección.
+
+Esto corrige una generalización del análisis anterior: el uso de DoH no garantiza que las consultas de esta muestra nunca sean visibles como DNS convencional. La ruta UDP existe y puede ser observable en la red cuando se utiliza. No se afirma que haya ocurrido en la ONU.
+
+La dirección 8.8.8.8 y las IPs de los proveedores DoH son resolvedores, no C2 de respaldo. No se identificó una IP C2 estática alternativa en las rutas examinadas; si no obtiene un candidato, devuelve fallo.
+
+8. QUÉ QUEDA CONFIRMADO Y QUÉ NO
+Confirmado: dominio incorporado, proceso de descifrado, consulta TXT, candidaturas ofuscadas, selección pseudoaleatoria, respaldo UDP y uso final como IPv4 TCP/443.
+Confirmado también: coincide el dominio con el del análisis anterior, pese al hash diferente. Eso vincula la configuración de descubrimiento; no establece identidad byte a byte, autoría ni momento del cambio entre muestras.
+
+No obtenido: IP actual, contenido de TXT actual o pasado, historial de rotaciones, fecha de cada cambio ni servidor que estaba activo durante una sesión concreta. Esos datos requieren evidencia histórica ya capturada o una consulta de red, que no se hizo.
+El anterior 178.128.60.155:443 sigue siendo una observación del caso anterior, no un destino recuperado de un TXT actual en esta revisión.
+Estas conclusiones pertenecen a .liso. No sustituyen el análisis separado de u, cuyo canal principal predeterminado se reconstruyó de otra forma.
+
+ARCHIVOS
+configuracion-descifrada-liso.csv: diez entradas recuperadas.
+configuracion-y-txt-liso.json: ciphertext/plaintext, resolvedores y comprobaciones locales.
+evidencia-configuracion-txt-liso.txt: recortes del desensamblado utilizados.

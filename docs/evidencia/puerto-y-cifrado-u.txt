@@ -1,0 +1,48 @@
+PUERTO Y CIFRADO DEL CANAL DE U
+
+Resultado principal
+El endpoint IPv4 predeterminado incorporado es 143.244.144.70 TCP 443. El puerto se recupero mediante traduccion matematica independiente de la tabla de constantes. No se ejecutaron instrucciones de la muestra ni se realizaron consultas DNS o conexiones a servidores.
+Esto identifica la configuracion estatica predeterminada, no demuestra una conexion efectiva de u en la ONU. Tampoco atribuye el servidor a una persona ni resuelve todas las rutas alternativas de configuracion.
+
+Tabla cifrada
+La funcion 0x2ac88 devuelve ocho constantes mediante operaciones redundantes y predicados opacos. Para los indices 0 a 7, los predicados relevantes siempre se satisfacen porque calculan (3*x)%3 con valores pequenos sin desbordamiento. Los casos producen las palabras 9e3779b9, 6c62272e, 243f6a88, 85a308d3, 13198a2e, 03707344, a4093822 y 299f31d0.
+0x17ad4 combina esas palabras mediante XOR y sumas de 32 bits. Los pasos posteriores aplican mezclas de rotacion/multiplicacion en pares que revierten sus efectos; dos pasadas XOR adicionales tambien se cancelan. La clave resultante se serializa little endian.
+Clave estatica de la TABLA (no confundir con una clave de sesion):
+975e55f25b629ca16af96910f209968d41e476c2013005f250c222b714a50f2d
+Nonce fijo de tabla: 4b4154415255000000000000 (KATARU seguido de ceros).
+Algoritmo: ChaCha20, nonce de 12 bytes. El indice de entrada se usa como contador inicial de bloques de 64 bytes; no se empieza siempre por el bloque cero.
+
+Prueba del puerto
+Entrada 1: bytes b695 en offset 0x61694. Con contador 1, descifra a 01bb. La rutina 0x5b90 recupera esos dos bytes y los utiliza como puerto en el sockaddr de la funcion 0x5c10. En la plataforma big endian, 0x01bb es 443.
+Control independiente de coherencia con otras entradas:
+Entrada 38 -> 143.244.144.70
+Entrada 2 -> listening tun0
+Entrada 3 -> /proc/
+Entrada 4 -> /exe
+Entrada 5 -> /fd
+Entrada 6 -> /maps
+La coincidencia de multiples cadenas esperadas verifica mucho mejor la traduccion que el resultado de dos bytes del puerto por si solo. No se presentaron candidatos intermedios incorrectos como conclusiones.
+
+Cifrado de los mensajes
+0x7618 implementa la quarter-round ChaCha, con rotaciones 16, 12, 8 y 7. 0x7704 organiza constantes, clave de 256 bits, contador de 32 bits y nonce de 96 bits. 0x77c8 aplica diez rondas dobles: ChaCha20. 0x798c genera bloques y aplica XOR sobre los datos.
+0x7a80 implementa un autenticador compatible con Poly1305: recorte de bits de r, operaciones en limbos y etiqueta de 16 bytes.
+Las rutinas 0x8534 (sellado) y 0x8620 (apertura) construyen un esquema propio de ChaCha20 y Poly1305:
+1. Nonce de 12 bytes: un byte indicador de direccion, siete bytes cero y un contador de mensaje de 32 bits almacenado big endian.
+2. Generan los primeros 32 bytes del bloque ChaCha20 con contador de bloque cero para obtener la clave de un solo uso del autenticador.
+3. Cifran el cuerpo con ChaCha20 empezando en contador de bloque 1.
+4. Calculan Poly1305 directamente sobre el ciphertext y agregan una etiqueta de 16 bytes.
+5. Al recibir, calculan la etiqueta, acumulan XOR de los 16 bytes para compararla y rechazan el mensaje si no coincide. Solo despues descifran el cuerpo.
+En las llamadas del bucle revisadas, el indicador es 0 al enviar y 1 al recibir; el intercambio inicial usa otros valores/counters de arranque. Los contadores de envio y recepcion se actualizan por separado. El contador de mensaje forma parte del nonce; no es el mismo contador interno de bloque de ChaCha20.
+
+No debe etiquetarse sin mas como AEAD_CHACHA20_POLY1305 estandar de RFC 8439: las rutinas inspeccionadas autentican directamente el ciphertext. No se observa en ellas la concatenacion estandar de AAD, rellenos y longitudes de 64 bits. Una biblioteca AEAD estandar sin adaptar el formato no necesariamente verificara esas etiquetas.
+El prefijo de longitud de dos bytes se envia separado del cuerpo y la etiqueta; no se incorpora como AAD en estas funciones. Esto describe el formato observado, no es por si solo una demostracion de una vulnerabilidad explotable.
+
+Clave de sesion y establecimiento
+El contexto de mensajes no usa necesariamente la clave estatica de tabla. 0x1c6e0 construye un intercambio inicial: genera material de 32 bytes, envia un byte 2 y un bloque de 32 bytes, recibe una respuesta y emplea 0x1bc00, 0x8620 y 0x798c antes de devolver el contexto de sesion. La generacion previa recorta los bits del escalar de forma compatible con X25519.
+No se completa aqui una validacion integral de la funcion de intercambio, de la autenticidad del servidor o de toda la derivacion de claves. Por ello no se afirma que se puedan descifrar sesiones anteriores con la clave estatica de tabla. Haria falta reconstruir esa negociacion y disponer de los datos criptograficos correspondientes.
+
+Verificacion independiente
+Se uso PyCryptodome sobre bytes de archivo y operaciones matematicas transcritas, nunca una llamada a las funciones de la muestra. Se verificaron la tabla y las siete entradas descritas. Ademas se hizo un ensayo sintetico con clave artificial: cifrado/descifrado recupera el texto y modificar un byte cambia la etiqueta. Este ensayo comprueba la implementacion matematica del esquema descrito, no equivale a validar una captura real de la ONU.
+Archivos: tabla-u-resultados.txt y verificacion-cifrado-u.json. La muestra original mantiene el SHA256 7208f46f1f2f1f8204d91c39570ab54743535a8a4b5d00d1c335c42859e437c4.
+
+Queda pendiente verificar por completo la negociacion inicial y las rutas alternativas de seleccion del servidor. La conclusion nueva firme es el puerto 443 y la construccion criptografica de las rutinas de mensajes inspeccionadas.

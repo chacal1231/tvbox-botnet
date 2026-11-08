@@ -1,0 +1,23 @@
+ID metodo (no orden C2),Entrada VA,Trabajador VA,Capacidad,Confianza y limites
+0,0x0000a938,0x00010028,UDP con cabeceras IPv4/UDP propias,Alta: protocolo IP 17 y sockets raw.
+3,0x0000a9d0,0x00010f04,TCP SYN configurable y perfiles de paquetes,"Alta: TCP, SYN predeterminado, opciones de perfil linux/windows/android y planificación de reintentos."
+4,0x0000aa1c,0x00011c88,TCP ACK con carga de datos configurable,Alta: protocolo 6; ACK predeterminado; otros indicadores TCP parametrizables.
+5,0x0000c170,0x0000c170,TCP con preparación de conexión y posterior tráfico construido,Alta para TCP y conexión; media para la etiqueta STOMP. No implica secuestro de conexiones ajenas.
+6,0x0000aa68,0x000126c8,GRE con IPv4/UDP interior,"Alta: protocolo exterior 47, tipo 0x0800 e IP interior con protocolo 17."
+7,0x0000aab4,0x00012f10,GRE con encapsulado Ethernet/IP/UDP,Alta para estructura: desplazamiento interior incorpora 14 bytes adicionales frente al método 6.
+9,0x0000a984,0x0000ab4c,UDP mediante sockets de datagramas,Alta: sockets UDP y envíos repetidos; no requiere construir todo el paquete IP.
+15,0x00014384,0x00013898,TCP SYN con opciones y variación de campos,"Alta: protocolo 6, paquetes de 60 bytes, opciones TCP, modos alternativos de lanzamiento."
+17,0x0000ab00,0x000126c8,Alias de GRE IPv4/UDP del método 6,Alta: pasa por 0x12ef0 y desemboca en 0x126c8.
+18,0x0000ea74,0x0000ec3c,HTTP/1.1 GET configurable; TLS directo y motor compartido,Alta en ramas y envíos; proxy CONNECT sin segunda capa TLS observada.
+22,0x000108d8,0x000108d8,ICMP Echo Request,Alta: protocolo IP 1 y tipo/código ICMP 8/0; no es UDP.
+24,0x00008a04,0x0000b140,"Tres modos: TCP sostenido, HTTP de cabeceras incompletas y SSH previo a autenticación",Alta: HTTP puede usar TLS; la rama SSH de este método solo envía identificación/KEXINIT.
+26,0x00022730,0x0002246c,QUIC Initial sintético sobre UDP,"Alta para UDP, paquetes de 1200 bytes y cabecera larga QUIC; no demuestra handshake QUIC válido."
+27,0x000258e8,0x000251d8,Intentos de autenticación SSH por contraseña y reporte de credenciales,"Alta en intercambio de claves, cifrado, USERAUTH_SUCCESS y mensaje 0x83; no abre shell en esta ruta."
+28,0x000266a8,0x00025e44,"Control OpenVPN sobre UDP, con variante raw","Alta: puerto predeterminado 1194, encabezados 0x38 y campos de sesión/control; variante raw o datagrama."
+30,0x0000f400,0x0000f5c8,"HTTP/1.1 POST configurable, cuerpo recibido o aleatorio; TLS directo",Alta en constructor y motor compartido; proxy CONNECT sin segunda capa TLS observada.
+32,0x0000cdec,0x0000cfb4,HTTP/1.1 con perfiles de navegador y TLS directo,Alta en cabeceras y cookies fabricadas; no demuestra evasión de WAF ni sesiones auténticas.
+33,0x000217cc,0x000214ec,HTTP/2 sobre TLS: SETTINGS y HEADERS con END_STREAM/END_HEADERS,Alta: flujos impares y reconexión; sin RST_STREAM en el trabajador revisado.
+34,0x000282b8,0x00027e58,WireGuard: iniciaciones de handshake y variantes de tráfico,"Alta: puerto predeterminado 51820, mensajes de 148 bytes y rutinas Noise/mac1; no revela claves de una VPN legítima."
+35,0x0002990c,0x000288d4,Minecraft: handshake/login y tráfico repetido por TCP,"Alta para estructura VarInt, puerto 25565, nombres aleatorios y fases de conexión; eficacia no probada."
+37,0x0002a2e8,0x00029b40,"Tráfico tipo FiveM/Quake connect, implementado sobre TCP","Alta para bytes y transporte: puerto 30120, prefijo ff ff ff ff y connect. Media para atribuir familia; TCP es una limitación real de esta implementación."
+38,0x0002a878,0x0002a3dc,ClientHello TLS sintético repetido sobre TCP,Alta: SNI/material de clave/relleno; sin recepción de ServerHello ni sesión completa en este trabajador.

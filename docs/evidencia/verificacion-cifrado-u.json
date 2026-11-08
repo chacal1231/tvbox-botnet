@@ -1,0 +1,9 @@
+{
+  "synthetic_test": true,
+  "nonce": "010000000000000000000007",
+  "ciphertext": "16c373714b62adba7978a6774cf23fba8004cb7a",
+  "tag": "aaf38ccae7d7c3663162530f4a7672ae",
+  "roundtrip": true,
+  "changed_ciphertext_changes_tag": true,
+  "not_a_sample_execution": true
+}

@@ -1,0 +1,35 @@
+type,value,port,proto,case,sample,role,evidence,block,notes,source,last_verified
+domain,jxk.imarapi.st,,,A;B,.liso,c2-discovery,static,candidate-scoped-block,dominio en ambos informes; XOR 6b9e3f2a verificado en B,informe A y análisis local B,2026-11-08 (archivo local)
+ens,2busydrinkingcodeine.eth,,,A,.ffaaxx,c2-discovery,static (informe original),not-applicable,contrato -> C2 pendiente,informe original A,fecha de observación no documentada; no verificado en red
+ipv4,178.128.60.155,443,tcp,A,.liso,c2,observed,candidate-scoped-block,histórico,informe original A,fecha de observación no documentada; no verificado en red
+ipv4,143.244.144.70,443,tcp,A,.a,observed-connection,observed,candidate-scoped-block,función de protocolo no confirmada en A,informe original A,fecha de observación no documentada; no verificado en red
+ipv4,143.244.144.70,443,tcp,B,u,c2,static,candidate-scoped-block,C2 predeterminado; protocolo propio X25519/ChaCha20 (no TLS),análisis/captura local B,2026-11-08 (archivo local)
+ipv4,170.205.28.207,80,tcp,B,downloader,download,static,candidate-scoped-block,GET /mips -> .liso,análisis/captura local B,2026-11-08 (archivo local)
+url,http://170.205.28.207/mips,80,tcp,B,downloader,download,static,candidate-scoped-block,,análisis/captura local B,2026-11-08 (archivo local)
+domain,proxy.netloxproxies.com,,,B,u,adb-proxy,static,review-first,ruta alternativa ADB (orden 19); no es C2 principal,análisis/captura local B,2026-11-08 (archivo local)
+ipv4,87.58.159.3,443,tcp,A,.ffaaxx,unclassified,observed,review-first,C2/RPC/DoH sin distinguir,informe original A,fecha de observación no documentada; no verificado en red
+ipv4,43.157.198.137,443,tcp,A,.ffaaxx,unclassified,observed,review-first,C2/RPC/DoH sin distinguir,informe original A,fecha de observación no documentada; no verificado en red
+ipv4,159.223.66.236,443,tcp,A,unknown,unclassified,observed,review-first,proceso no atribuido,informe original A,fecha de observación no documentada; no verificado en red
+ipv4,104.233.223.169,80,tcp,A,.liso (hijo),possible-ddos-target,observed,no-global-block,destino de conexiones masivas; DDoS como hipótesis; no es C2; no bloqueo global automático,informe original A,fecha de observación no documentada; no verificado en red
+listen,0.0.0.0,42363,tcp,A,.a,local-listener,observed,not-applicable,función pendiente,informe original A,fecha de observación no documentada; no verificado en red
+ipv4,8.8.8.8,443,tcp,B,.liso,doh-legit,static,no-global-block,detección: ONU->DoH,análisis/captura local B,2026-11-08 (archivo local)
+ipv4,8.8.4.4,443,tcp,B,.liso,doh-legit,static,no-global-block,detección: ONU->DoH,análisis/captura local B,2026-11-08 (archivo local)
+ipv4,1.1.1.1,443,tcp,B,.liso,doh-legit,static,no-global-block,detección: ONU->DoH,análisis/captura local B,2026-11-08 (archivo local)
+ipv4,1.0.0.1,443,tcp,B,.liso,doh-legit,static,no-global-block,detección: ONU->DoH,análisis/captura local B,2026-11-08 (archivo local)
+ipv4,9.9.9.9,443,tcp,B,.liso,doh-legit,static,no-global-block,detección: ONU->DoH,análisis/captura local B,2026-11-08 (archivo local)
+ipv4,149.112.112.112,443,tcp,B,.liso,doh-legit,static,no-global-block,detección: ONU->DoH,análisis/captura local B,2026-11-08 (archivo local)
+ipv4,94.140.14.14,443,tcp,B,.liso,doh-legit,static,no-global-block,detección: ONU->DoH,análisis/captura local B,2026-11-08 (archivo local)
+ipv4,94.140.15.15,443,tcp,B,.liso,doh-legit,static,no-global-block,detección: ONU->DoH,análisis/captura local B,2026-11-08 (archivo local)
+ipv4,8.8.8.8,53,udp,B,.liso,dns-fallback-legit,static,no-global-block,respaldo TXT,análisis/captura local B,2026-11-08 (archivo local)
+domain,public-eth.nownodes.io,443,tcp,A,.ffaaxx,eth-rpc-legit,static (informe original),no-global-block,,informe original A,fecha de observación no documentada; no verificado en red
+domain,eth.drpc.org,443,tcp,A,.ffaaxx,eth-rpc-legit,static (informe original),no-global-block,,informe original A,fecha de observación no documentada; no verificado en red
+path,/var/config/run_customized_sdk.sh,,,A,script,persistence,observed,not-applicable,"archivo legítimo modificado; comprobar contenido y referencia compatible, no solo existencia/no vacío",informe original A,fecha de observación no documentada; no verificado en red
+path,/var/config/o/.ffaaxx,,,A,.ffaaxx,implant,observed,not-applicable,arg vodkat,informe original A,fecha de observación no documentada; no verificado en red
+path,/var/config/xxq/.liso,,,A,.liso,implant,observed,not-applicable,arg poon,informe original A,fecha de observación no documentada; no verificado en red
+path,/var/config/hmm,,,A,hmm,implant,observed,not-applicable,arg postsec1; vacío al recolectar,informe original A,fecha de observación no documentada; no verificado en red
+path,/var/tmp/.a,,,A,.a,implant,observed,not-applicable,borrado; proceso activo,informe original A,fecha de observación no documentada; no verificado en red
+file,.akataru-dead,,,B,u,marker,static,not-applicable,creado por orden 16,análisis/captura local B,2026-11-08 (archivo local)
+unix-socket,@fdrunkkkk@@@@5,,,A;B,.liso,abstract-socket-reference,static,not-applicable,,informe A y análisis local B,2026-11-08 (archivo local)
+unix-socket,@drunkasfk,,,A,.ffaaxx,abstract-socket-reference,static (informe original),not-applicable,,informe original A,fecha de observación no documentada; no verificado en red
+process-name,libssl.so,,,A,.liso;.ffaaxx,masquerade,observed,not-applicable,nombre legítimo por sí solo; correlacionar con ruta /var/config o /var/tmp,informe original A,fecha de observación no documentada; no verificado en red
+ipv4,185.173.39.100,443,tcp,B,.liso,observed-connection,observed,candidate-scoped-block,conexión establecida atribuida a .liso; no descifrada; histórica,"evidencia-02.txt, evidencia-05.txt y ampliacion-investigacion.txt; consola local B no publicada en bruto",fecha de captura no documentada con precisión; no verificado en red

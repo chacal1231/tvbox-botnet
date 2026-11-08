@@ -1,0 +1,11 @@
+ID,Offset archivo,VA ciphertext,Longitud,Texto descifrado
+1,0x89340,0x489340,14,jxk.imarapi.st
+2,0x89350,0x489350,7,father?
+3,0x89358,0x489358,9,libssl.so
+4,0x893d0,0x4893d0,24,/proc/self/oom_score_adj
+5,0x893ec,0x4893ec,18,/proc/self/oom_adj
+6,0x89364,0x489364,3,-17
+7,0x89368,0x489368,5,-1000
+8,0x89400,0x489400,352,/usr/bin/|/usr/sbin/|/system/|/mnt/mtd/app/|/org/|/z/zbin/|/home/app/|/dvr/bin/|/duksan/|/userfs/|/mnt/app/|/usr/etc/|/dvr/main/|/usr/local/|/var/bin/|/z/bin/|/dvr/|/mnt/mtd/|/zconf/|/gm/bin/|/home/process/|/var/challenge/|/usr/lib/|/home/webLib/|/sbin/|/bin/|/home/davinci/|/snap/|/www|/pppoe|/rom|/overlay|/media|/opt|/davinci|/devinfo|/config|/image
+9,0x89370,0x489370,5,PPid:
+10,0x89378,0x489378,73,wget|curl|tftp|mount|ftpget|telnet|socat|sh|cp|cat|mv|grep|ps|reboot|kill

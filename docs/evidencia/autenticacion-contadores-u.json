@@ -1,0 +1,261 @@
+{
+  "muestra_sha256": "7208f46f1f2f1f8204d91c39570ab54743535a8a4b5d00d1c335c42859e437c4",
+  "metodo": "Desensamblado local de bytes y comprobaciones de estado propias; no emulación",
+  "ejecucion_muestra": false,
+  "red": false,
+  "instrucciones_comprobadas": [
+    {
+      "VA": "0x32bc",
+      "instruccion": "lui $v0, 0x4000",
+      "coincide": true
+    },
+    {
+      "VA": "0x32c4",
+      "instruccion": "addiu $v0, $v0, 1",
+      "coincide": true
+    },
+    {
+      "VA": "0x32c8",
+      "instruccion": "sltu $v1, $v1, $v0",
+      "coincide": true
+    },
+    {
+      "VA": "0x32e0",
+      "instruccion": "sltu $v0, $v1, $v0",
+      "coincide": true
+    },
+    {
+      "VA": "0x3300",
+      "instruccion": "sw $zero, -0x6ec8($s7)",
+      "coincide": true
+    },
+    {
+      "VA": "0x3308",
+      "instruccion": "sw $zero, -0x6ecc($s5)",
+      "coincide": true
+    },
+    {
+      "VA": "0x4158",
+      "instruccion": "bnez $v0, 0x4084",
+      "coincide": true
+    },
+    {
+      "VA": "0x41cc",
+      "instruccion": "move $a2, $zero",
+      "coincide": true
+    },
+    {
+      "VA": "0x41d0",
+      "instruccion": "move $a1, $zero",
+      "coincide": true
+    },
+    {
+      "VA": "0x425c",
+      "instruccion": "sw $v0, -0x6ec8($s7)",
+      "coincide": true
+    },
+    {
+      "VA": "0x4268",
+      "instruccion": "sw $zero, -0x6ecc($s5)",
+      "coincide": true
+    },
+    {
+      "VA": "0x4644",
+      "instruccion": "lw $a1, -0x6ecc($s5)",
+      "coincide": true
+    },
+    {
+      "VA": "0x4650",
+      "instruccion": "addiu $v0, $a1, 1",
+      "coincide": true
+    },
+    {
+      "VA": "0x4660",
+      "instruccion": "sw $v0, -0x6ecc($s5)",
+      "coincide": true
+    },
+    {
+      "VA": "0x4674",
+      "instruccion": "addiu $a2, $zero, 1",
+      "coincide": true
+    },
+    {
+      "VA": "0x4684",
+      "instruccion": "bnez $v0, 0x46f4",
+      "coincide": true
+    },
+    {
+      "VA": "0x4700",
+      "instruccion": "b 0x460c",
+      "coincide": true
+    },
+    {
+      "VA": "0x461c",
+      "instruccion": "b 0x4084",
+      "coincide": true
+    },
+    {
+      "VA": "0x5444",
+      "instruccion": "sw $zero, ($v0)",
+      "coincide": true
+    },
+    {
+      "VA": "0x5478",
+      "instruccion": "bal 0x53f0",
+      "coincide": true
+    },
+    {
+      "VA": "0x5fdc",
+      "instruccion": "lw $a1, -0x6ec8($v0)",
+      "coincide": true
+    },
+    {
+      "VA": "0x5fe4",
+      "instruccion": "addiu $v1, $a1, 1",
+      "coincide": true
+    },
+    {
+      "VA": "0x5fe8",
+      "instruccion": "sw $v1, -0x6ec8($v0)",
+      "coincide": true
+    },
+    {
+      "VA": "0x5ff4",
+      "instruccion": "move $a2, $zero",
+      "coincide": true
+    },
+    {
+      "VA": "0x855c",
+      "instruccion": "sb $a2, 0x40($sp)",
+      "coincide": true
+    },
+    {
+      "VA": "0x858c",
+      "instruccion": "sw $a1, 0x48($sp)",
+      "coincide": true
+    },
+    {
+      "VA": "0x86b4",
+      "instruccion": "sw $a1, 0x58($sp)",
+      "coincide": true
+    },
+    {
+      "VA": "0x86b8",
+      "instruccion": "sb $a2, 0x50($sp)",
+      "coincide": true
+    },
+    {
+      "VA": "0x8734",
+      "instruccion": "bnez $v0, 0x8668",
+      "coincide": true
+    },
+    {
+      "VA": "0x8754",
+      "instruccion": "bal 0x798c",
+      "coincide": true
+    },
+    {
+      "VA": "0x1c814",
+      "instruccion": "bnez $v0, 0x1c864",
+      "coincide": true
+    },
+    {
+      "VA": "0x1c84c",
+      "instruccion": "bnez $v0, 0x1c864",
+      "coincide": true
+    },
+    {
+      "VA": "0x1c85c",
+      "instruccion": "beq $v1, $v0, 0x1c89c",
+      "coincide": true
+    },
+    {
+      "VA": "0x1c8d0",
+      "instruccion": "xor $v0, $v0, $a1",
+      "coincide": true
+    },
+    {
+      "VA": "0x1c8dc",
+      "instruccion": "or $s0, $s0, $v0",
+      "coincide": true
+    },
+    {
+      "VA": "0x1c8e0",
+      "instruccion": "bnez $s0, 0x1c864",
+      "coincide": true
+    },
+    {
+      "VA": "0x1c8fc",
+      "instruccion": "bnez $v0, 0x1c864",
+      "coincide": true
+    },
+    {
+      "VA": "0x1c544",
+      "instruccion": "move $v0, $zero",
+      "coincide": true
+    }
+  ],
+  "reglas_comprobadas": [
+    {
+      "comprobacion": "Umbral en 0x0",
+      "correcta": true
+    },
+    {
+      "comprobacion": "Umbral en 0x1",
+      "correcta": true
+    },
+    {
+      "comprobacion": "Umbral en 0x3fffffff",
+      "correcta": true
+    },
+    {
+      "comprobacion": "Umbral en 0x40000000",
+      "correcta": true
+    },
+    {
+      "comprobacion": "Umbral en 0x40000001",
+      "correcta": true
+    },
+    {
+      "comprobacion": "Umbral en 0xffffffff",
+      "correcta": true
+    },
+    {
+      "comprobacion": "Direcciones separadas para el mismo contador",
+      "correcta": true
+    },
+    {
+      "comprobacion": "Contador almacenado big-endian",
+      "correcta": true
+    },
+    {
+      "comprobacion": "Contadores distintos producen nonces distintos",
+      "correcta": true
+    },
+    {
+      "comprobacion": "Contadores independientes tras identificación",
+      "correcta": true
+    },
+    {
+      "comprobacion": "La selección de rama depende del indicador, no de un byte del mensaje",
+      "correcta": true
+    }
+  ],
+  "retornos_producto_escalar": [
+    "0x1c548"
+  ],
+  "hallazgos": {
+    "umbral_bucle": "reconecta cuando TX o RX > 0x40000000",
+    "tx_tras_identificacion": 1,
+    "rx_tras_identificacion": 0,
+    "incremento": "consume valor anterior y almacena siguiente antes de cifrar/verificar",
+    "error_etiqueta": "libera buffers y pasa a cierre/reintento; no despacho",
+    "sin_rechazo_explicito_secreto_nulo": "No observado en 0x1bc00..0x1c928; no demuestra explotación"
+  },
+  "limites": [
+    "No ejecución MIPS",
+    "No prueba de concurrencia ni interoperabilidad",
+    "No auditoría completa del campo X25519",
+    "Sin PCAP ni secretos de sesión reales"
+  ]
+}

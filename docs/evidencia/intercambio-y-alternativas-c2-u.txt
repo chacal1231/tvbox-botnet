@@ -1,0 +1,50 @@
+INTERCAMBIO INICIAL Y DESTINOS ALTERNATIVOS DE U
+
+Alcance
+Analisis estatico de la muestra SHA256 7208f46f1f2f1f8204d91c39570ab54743535a8a4b5d00d1c335c42859e437c4. Se leyeron instrucciones y datos; se tradujo la matematica a un programa independiente con claves sinteticas. No se ejecuto ni emulo el binario, no se resolvieron dominios ni se contacto ningun destino.
+
+Conclusion
+La configuracion predeterminada sigue siendo 143.244.144.70 TCP 443. El codigo admite sustituir la direccion mediante argumentos de inicio, incluida IPv6. No se ha confirmado una lista de servidores de respaldo que rote automaticamente el canal principal entre los dominios hallados antes.
+La sesion usa un intercambio basado en Curve25519/X25519, una identidad publica incorporada y el esquema propio ChaCha20 mas Poly1305 descrito anteriormente. No se observa TLS/X.509 en esta ruta. El puerto 443 no debe confundirse con HTTPS.
+
+INTERCAMBIO EN 0x1c6e0
+1. La rutina 0x1c5cc obtiene 32 bytes de /dev/urandom. Si la apertura o la lectura no producen 32 bytes, existe una rama de relleno basada en la rutina 0x189d8. No se evaluo su calidad aleatoria; no se afirma que esa rama ocurriera en la ONU.
+2. En 0x1c65c-0x1c680 recorta el escalar: primer byte AND f8, ultimo byte AND 3f y OR 40. La rutina 0x1c558 usa el punto base 9 y llama al producto escalar 0x1bc00. La disposicion de datos y las operaciones de campo de esa funcion son coherentes con X25519. Se conserva la clave privada efimera del cliente y se calcula su publica de 32 bytes.
+3. 0x1c750-0x1c788 envia 33 bytes: indicador 2 seguido de la publica efimera del cliente. No se observan encabezados HTTP ni ClientHello TLS.
+4. 0x1c79c-0x1c7f4 espera y recibe una respuesta de 80 bytes, pudiendo completarla en varias lecturas. El limite de espera de cada consulta al descriptor es 5000 ms; no equivale necesariamente a un tiempo total de cinco segundos.
+5. Los primeros 32 bytes de esa respuesta son tratados como publica efimera del servidor. En 0x1c7fc-0x1c80c se calcula un secreto compartido efimero E con la privada efimera del cliente.
+6. Los 48 bytes restantes se entregan a 0x8620 con E, contador cero e indicador cero. Se verifican 16 bytes de Poly1305 y se recuperan 32 bytes de plaintext. El fallo de etiqueta o una longitud distinta de 32 aborta la rutina.
+7. En 0x1c89c-0x1c8e0 compara esos 32 bytes con la identidad publica esperada que recibe la funcion como argumento. La comparacion acumula XOR y OR a lo largo del bloque. El llamador principal pasa 32 bytes incorporados en offset 0x5ec90.
+Huella SHA256 de esos bytes de identidad publica: ec6835227a9bbf0605bb8bfeb55e74f564bd59e2d33ddf107a80973db5cd6f9e.
+8. En 0x1c8e8-0x1c8f4 vuelve a llamar al producto escalar, esta vez entre la privada efimera del cliente y la identidad publica comprobada. Produce un segundo secreto S.
+9. En 0x1c904-0x1c920 transforma S usando ChaCha20 con clave E, nonce de doce bytes cero y contador de bloque cero; los 32 bytes de salida se entregan como clave de sesion al llamador. La lectura de esta rutina no muestra un HKDF estandar en ese paso.
+
+Interpretacion matematica
+Cliente: E = X25519(privada efimera cliente, publica efimera servidor).
+Cliente: S = X25519(privada efimera cliente, publica estatica esperada servidor).
+Clave de sesion: S XOR primeros 32 bytes del flujo ChaCha20(E, nonce cero, contador cero).
+Un servidor con las privadas correspondientes puede calcular los mismos dos secretos. La clave de tabla cifrada, identificada en la etapa anterior, no es esta clave de sesion.
+La comparacion de una publica y la etiqueta del primer mensaje no deben describirse por si solas como una auditoria completa de autenticacion del protocolo. No se concluye que el diseno sea criptograficamente seguro, que carezca de debilidades ni que permita recuperar claves privadas. El resultado es una reconstruccion del flujo inspeccionado.
+
+USO POSTERIOR
+La clave de sesion alimenta las funciones 0x8534 y 0x8620. Los mensajes usan nonce formado por indicador de direccion, siete ceros y contador de mensaje de 32 bits. El contador de bloque cero deriva la clave Poly1305; el bloque uno inicia el cifrado del cuerpo. El autenticador se calcula directamente sobre ciphertext, con etiqueta de 16 bytes. No es el empaquetado estandar RFC 8439 de AAD y longitudes.
+No se puede descifrar una sesion pasada solamente con la clave estatica de tabla o con esta huella de identidad: faltan los secretos de sesion o material privado y la captura correspondiente.
+
+RUTAS DE SELECCION DEL C2
+Predeterminada
+0x2f70-0x2f80 instala el puntero de funcion 0x5c10, y 0x5380-0x53ec contiene otra ruta que lo restaura. El bucle consulta ese puntero en 0x3388-0x33a4 antes de crear la conexion. 0x5c10 prepara 143.244.144.70 y el puerto descifrado 443.
+
+Sustitucion por argumentos
+La logica 0x3024-0x30c8 examina argc y argv[2], es decir el segundo argumento de usuario, despues de otro argumento previo. Intenta interpretar una IPv6 literal mediante la ruta de conversion, conserva el puerto obtenido por 0x5b90 y construye sockaddr_in6.
+Si no se acepta como IPv6, la rama 0x3be4-0x3c2c intenta IPv4 y construye sockaddr_in. En 0x30b4-0x30bc borra el puntero del resolvedor predeterminado. Por ello una direccion suministrada y aceptada puede persistir en los reintentos, sin que 0x5c10 la sobrescriba en cada vuelta.
+Esta ruta demuestra posibilidad de otro servidor decidido al iniciar u; no demuestra que se le pasara un argumento concreto en la ONU. Tampoco proporciona una segunda IP predeterminada identificada. No se lanzo la muestra para probar el parametro.
+
+Reconexiones
+0x53f0 cierra el descriptor principal y limpia un indicador de estado. 0x5458 la llama y aplica el mecanismo de espera/reintento de 0x1e518. Esa funcion cuenta intentos y ajusta la espera con un limite; no contiene por si misma una lista de servidores ni una seleccion por dominio. El termino reconexion no implica rotacion automatica de destinos.
+
+Dominios y trafico auxiliar
+Las rutas documentadas de hostcloud/serverstats generan solicitudes auxiliares, y netlox es un proxy con negociacion CONNECT en otra rutina. No se ha enlazado ninguna de ellas a una sustitucion automatica del sockaddr del canal principal. No se deben presentar como C2 alternativos confirmados.
+
+VERIFICACION Y LIMITES
+Se construyo un modelo matematico independiente con tres pares de claves sinteticas: cliente efimero, servidor efimero y servidor estatico. Ambos participantes obtienen los mismos secretos, se verifica el mensaje de identidad sintetico y coinciden sus claves de sesion. El resultado se guarda en verificacion-intercambio-u.json. Esto comprueba consistencia de la interpretacion; no ejecuta el codigo MIPS, no valida interoperabilidad con un servidor real ni sustituye una auditoria completa de las operaciones de campo.
+No se observaron en vivo sesiones de u ni se recuperaron sus argumentos de una ejecucion activa. No se descartan referencias indirectas, cambios en memoria, parches de configuracion o rutas aun no revisadas. Lo confirmado es el destino por defecto y una ruta de sustitucion por IP literal al inicio, junto con el intercambio inicial descrito.
